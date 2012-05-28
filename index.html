@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Bind'em: two-way declarative data binding for javascript</title>
+
+    <!-- include jQuery, jQuery UI -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<!--    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" ></script> -->
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/sunny/jquery-ui.css">
+
+    <!-- syntax highlighting - only for purpose of demos -->
+    <script src="http://yandex.st/highlightjs/6.1/highlight.min.js"></script>
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/6.1/styles/github.min.css">
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script type="text/javascript">
+    $(function() {
+           // highlight source code
+            $('pre code').addClass('javascript').each(function() {
+                hljs.highlightBlock(this);
+            });
+    });
+    </script>
+
+  </head>
+  <body>
+<div id="main">
+
+<div id="header">
+    <ul id="menu">
+        <li class="active"><a href="index.html">Home</a></li>
+        <li><a href="examples.html">Examples</a></li>
+<!--         <li><a href="doc.html">Documentation</a></li> -->
+        <li><a href="http://github.com/dundalek/bindem/zipball/master">Download</a></li>
+    </ul>
+    <h1>Bind'em</h1>
+</div>
+
+<div id="content">
+
+<p class="intro">A light-weight javascript library providing <a href="http://knockoutjs.com/">Knockout</a>-like two-way declarative data binding for <a href="http://documentcloud.github.com/backbone/">Backbone</a>.</p>
+
+<h2>Intro</h2>
+
+<p>When I first saw Knockout.js I was stunned. It introduces concepts like observables, computed observables, View-Model (MVVM) and two-way declarative data binding. It makes building highly interactive user interfaces really easy. However, as time went on I realized it is kind of hard to build and structure more complex apps with Knockout.js, especially integrating other non-knockout components. Which is where Backbone.js is more suitable option.</p>
+
+<p>Observables are basically an event system, which is heavily used in Backbone. Computed observables can be simulated as well. But when you want to have a rich interactivity you end up with a lot of event handlers around your code. Often it ends up like spaghetti code made out of jQuery. The View-Model paradigm and declarative two-way binding reduces a lot of code and makes the application logic clearer.</p>
+
+<p>The goal of this library is to bring some Knockout awesomeness to the Backbone world!</p>
+
+<p>Tested in Chrome 19, Firefox 12, Opera 11, Internet Explorer 6 7 8. <a href="tests/">Test</a> it in your browser.</p>
+
+<h2>Example</h2>
+
+<iframe style="width: 100%; height: 170px" src="http://fiddle.jshell.net/dundalek/JTQr8/show/"></iframe>
+
+<iframe class="example" style="width: 100%; height: 530px" src="http://jsfiddle.net/dundalek/JTQr8/embedded/js,html,result/"></iframe>
+
+
+<p>See more <a href="examples.html">examples</a> of advanced usage.</p>
+
+<h2>Usage</h2>
+
+<p>First you need to initialize bindings using:<br></p>
+<pre><code>Backbone.Bindem.on.call(view, bindingsObject [,options]);</code></pre>
+<p>There are following options available:</p>
+
+<ul>
+    <li><code>model</code> - make bindings to the specified model. Default is the view's model.</li>
+    <li>initialize - init values in DOM using values from the model. Default is false.</li>
+    <li>root - Specifiy the root element. Selectors for element binding are searched relatively to the root. Default is the view's element stored in <code>el</code> property.</li>
+</ul>
+
+<p>
+The <code>bindingsObject</code> has a following form:</p>
+<pre><code>{
+    // basic usage of common bindings
+    modelAttribute: {
+        // to use the binding you just specify a string with selector
+        bindingType: '#selector',
+        // if you want to specify some options, you need to use object literal
+        otherBinding: {
+            selector: '#someElement',
+            someOption: ...
+        },
+        // if you want to specify many elements, just put then in array
+        text: ['#selector1', '#selector2', {selector: '#selector3'}]
+    },
+    // css, style and attr bindings use the following pattern
+    otherAttribute: {
+        css: {
+            className: '#selector',
+            warning: '#messageBox'
+        },
+        style: {
+            cssProperty: '#selector',
+            'font-weight': '.highlight'
+        },
+        attr: {
+            elementAttribute: '#selector',
+            title: '#someId'
+        }
+    },
+    // change handler added for convenience
+    anotherAttribute: {
+        change: function(value) {
+            // this function is called when model attribute changes.
+        }
+    }
+}</code></pre>
+
+<h2>Bindings</h2>
+
+<p>Most of the Knockout bindings were implemented with the same behavior.</p>
+
+<table>
+
+<tr><td>text</td><td>Displays the text value of a model's attribute in associated DOM element.</td></tr>
+<tr><td>html</td><td>Displays the html value of an attribute in element.</td></tr>
+<tr><td>css</td><td>Adds or removes element class based on value.</td></tr>
+<tr><td>style</td><td>Adds or removes element style values.</td></tr>
+<tr><td>attr</td><td>Sets attribute of an element to a value of model' attribute.</td></tr>
+<tr><td>visible&nbsp;/&nbsp;hidden</td><td>Show or hide element base on value.</td></tr>
+<tr><td>enable&nbsp;/&nbsp;disable</td><td>Show or hide element base on value.</td></tr>
+<tr><td>value</td><td>Synchronize value between form element and model. Works with &lt;input&gt; and &lt;textarea&gt;. Value is updated by default with change event (which is trigerred when element loses focus). If you want value to be updated on every keystroke, specify other event, for example: <code>event: 'keyup'</code>.</td></tr>
+<tr><td>checked</td><td>Synchronize the state of &lt;checkbox&gt; or &lt;radio&gt; elements with model.</td></tr>
+<tr><td>hasfocus</td><td>Synchronize focused state of an element with model's value. If the value is set to true, then the element gains focus.</td></tr>
+<tr><td>uniqueName</td><td>Sets a unique value as to name attribute of an element.</td></tr>
+<tr><td>change</td><td>Specified functions is called when model attribute changes. This is added for convenience and is equivalent to binding change event on model.</td></tr>
+</table>
+
+<h2>Download</h2>
+
+<a id="download" class="ui-widget-content ui-state-default ui-corner-all" href="http://github.com/dundalek/bindem/zipball/master">download here</a><br>
+Source code is hosted on <a href="http://github.com/dundalek/bindem">github</a>.<br>
+Please fill feature requests and bug reports <a href="http://github.com/dundalek/bindem/issues">here</a>.
+
+<h2>Other libraries</h2>
+
+<p>If this library doesn't fit your taste (please let me know why), you can try different ones from other authors:</p>
+
+<ul>
+<li><a href="https://github.com/theironcook/Backbone.ModelBinder">Backbone.ModelBinder</a> - Simple Model-View binding for Backbone</li>
+<li><a href="http://kmalakoff.github.com/knockback/">Knockback</a> - library bridging Backbone and Knockout. It supports whole feature-set of Knockout, not just the data binding.</li>
+</ul>
+
+</div>
+
+</div>
+  </body>
+</html>
