@@ -59,12 +59,19 @@
                 if (options.initialize) {
                     accessor.call(self, el, model.get(options.attr));
                 }
-                model.on('change:' + options.attr, function() {
+                function handler() {
+                    var modelVal = model.get(options.attr);
                     var args = Array.prototype.slice.call(arguments);
-                    args.unshift(model.get(options.attr));
+                    args.unshift(undefined);
                     args.unshift(el);
-                    accessor.apply(self, args);
-                }, self);
+                    var elementVal = accessor.apply(self, args);
+                    if (modelVal !== elementVal) {
+                        args[1] = modelVal;
+                        accessor.apply(self, args);
+                    }
+                }
+                model.on('change:' + options.attr, handler, self);
+                model.on('sync', handler, self);
             }
         },
         _bindView: function(model, el, accessor, binding, options) {
@@ -74,7 +81,11 @@
                     var args = Array.prototype.slice.call(arguments);
                     args.unshift(undefined);
                     args.unshift(el);
-                    model.set(options.attr, accessor.apply(self, args));
+                    var elementVal = accessor.apply(self, args),
+                        modelVal = model.get(options.attr);
+                    if (modelVal !== elementVal) {
+                       model.set(options.attr, elementVal);
+                    }
                 });
             }
         },
