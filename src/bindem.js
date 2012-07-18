@@ -56,11 +56,12 @@
         _bindModel: function(model, el, accessor, binding, options) {
             var self = this;
             if (model && options.attr) {
-                if (options.initialize) {
-                    accessor.call(self, el, model.get(options.attr));
+                function getModelVal() {
+                    var val = model.get(options.attr);
+                    return (typeof binding.m2v === 'function' ? binding.m2v(val) : val);
                 }
                 function handler() {
-                    var modelVal = model.get(options.attr);
+                    var modelVal = getModelVal();
                     var args = Array.prototype.slice.call(arguments);
                     args.unshift(undefined);
                     args.unshift(el);
@@ -69,6 +70,9 @@
                         args[1] = modelVal;
                         accessor.apply(self, args);
                     }
+                }
+                if (options.initialize) {
+                    accessor.call(self, el, getModelVal());
                 }
                 model.on('change:' + options.attr, handler, self);
                 model.on('sync', handler, self);
@@ -83,6 +87,7 @@
                     args.unshift(el);
                     var elementVal = accessor.apply(self, args),
                         modelVal = model.get(options.attr);
+                    elementVal = (typeof binding.v2m === 'function' ? binding.v2m(elementVal) : elementVal);
                     if (modelVal !== elementVal) {
                        model.set(options.attr, elementVal);
                     }
@@ -211,11 +216,11 @@
             init: function(binding, options) {
                 var self = this;
                 _.each(binding, function(selector, prop) {
-                    Bindem._bind.call(self, {
-                        accessor: function(el, val) {
-                            accessor.call(this, prop, el, val);
-                        },
-                        selector: selector}, options);
+                    var obj = (typeof selector === 'object') ? selector : {selector: selector};
+                    obj.accessor = function(el, val) {
+                        accessor.call(this, prop, el, val);
+                    };
+                    Bindem._bind.call(self, obj, options);
                 });
             },
             accessor: accessor
@@ -229,7 +234,9 @@
             }
             Bindem._bind.call(this, {
                 accessor: function(el, val) {
-                    binding.call(this, val);
+                    if (val !== undefined) {
+                        binding.call(this, val);
+                    }
                 }}, options);
         }
     };
@@ -250,7 +257,7 @@
         accessor: function(el, val) {
             if (el.is('[type=radio]')) {
                 if (val === undefined) {
-                    return el.val();
+                    return (el.prop('checked') ? '' : '_')+el.val();
                 } else {
                     el.prop('checked', el.val() === val);
                 }

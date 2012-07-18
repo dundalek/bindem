@@ -71,6 +71,8 @@
     <li><code>model</code> - make bindings to the specified model. Default is the view's model.</li>
     <li>initialize - init values in DOM using values from the model. Default is false.</li>
     <li>root - Specifiy the root element. Selectors for element binding are searched relatively to the root. Default is the view's element stored in <code>el</code> property.</li>
+    <li>m2v - Transforation function (model to view).</li>
+    <li>v2m - Transforation function (view to model).</li>
 </ul>
 
 <p>
@@ -100,7 +102,12 @@ The <code>bindingsObject</code> has a following form:</p>
         },
         attr: {
             elementAttribute: '#selector',
-            title: '#someId'
+            title: '#someId',
+            text: {
+                selector: '#hello',
+                // model to view transformation
+                m2v: function(val) {return 'Hello, ' + val + '!'}
+            }
         }
     },
     // change handler added for convenience

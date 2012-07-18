@@ -122,6 +122,75 @@
     return eq(model.get('str'), 'hellox');
   });
 
+  test('m2v option', function() {
+    var bindings, input;
+    root.html('<input type="text">');
+    input = root.find('input');
+    bindings = {
+      attr: {
+        value: {
+          selector: 'input',
+          m2v: function(val) {
+            return '-' + val.toLowerCase() + '-';
+          }
+        }
+      }
+    };
+    Bindem.on.call(view, bindings);
+    model.set('attr', 'Hello');
+    eq(input.val(), '-hello-');
+    input.val('hi');
+    input.trigger('change');
+    return eq(model.get('attr'), 'hi');
+  });
+
+  test('v2m option', function() {
+    var bindings, input;
+    root.html('<input type="text">');
+    input = root.find('input');
+    bindings = {
+      attr: {
+        value: {
+          selector: 'input',
+          v2m: function(val) {
+            return '-' + val.toLowerCase() + '-';
+          }
+        }
+      }
+    };
+    Bindem.on.call(view, bindings);
+    input.val('HI');
+    input.trigger('change');
+    eq(model.get('attr'), '-hi-');
+    model.set('attr', 'Hello');
+    return eq(input.val(), 'Hello');
+  });
+
+  test('v2m and m2v option', function() {
+    var bindings, input;
+    root.html('<input type="text">');
+    input = root.find('input');
+    bindings = {
+      attr: {
+        value: {
+          selector: 'input',
+          m2v: function(val) {
+            return val.toUpperCase();
+          },
+          v2m: function(val) {
+            return val.toLowerCase();
+          }
+        }
+      }
+    };
+    Bindem.on.call(view, bindings);
+    model.set('attr', 'hello');
+    eq(input.val(), 'HELLO');
+    input.val('HI');
+    input.trigger('change');
+    return eq(model.get('attr'), 'hi');
+  });
+
   module('bindings');
 
   test('text', function() {
@@ -179,6 +248,22 @@
       str: {
         attr: {
           title: 'div'
+        }
+      }
+    };
+    Bindem.on.call(view, bindings);
+    model.set('str', 'hello');
+    return eq(el.attr('title'), 'hello');
+  });
+
+  test('attr object', function() {
+    var bindings;
+    bindings = {
+      str: {
+        attr: {
+          title: {
+            selector: 'div'
+          }
         }
       }
     };

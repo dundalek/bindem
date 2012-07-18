@@ -89,6 +89,59 @@ test 'event option', ->
 
     eq model.get('str'), 'hellox'
 
+
+test 'm2v option', ->
+    root.html('<input type="text">')
+    input = root.find('input')
+    bindings =
+        attr:
+            value:
+                selector: 'input'
+                m2v: (val) -> '-'+val.toLowerCase()+'-'
+    Bindem.on.call view, bindings
+    model.set 'attr', 'Hello'
+
+    eq input.val(), '-hello-'
+    input.val('hi')
+    input.trigger('change')
+    eq model.get('attr'), 'hi'
+
+test 'v2m option', ->
+    root.html('<input type="text">')
+    input = root.find('input')
+    bindings =
+        attr:
+            value:
+                selector: 'input'
+                v2m: (val) -> '-'+val.toLowerCase()+'-'
+    Bindem.on.call view, bindings
+
+    input.val('HI')
+    input.trigger('change')
+    eq model.get('attr'), '-hi-'
+
+    model.set 'attr', 'Hello'
+    eq input.val(), 'Hello'
+
+test 'v2m and m2v option', ->
+    root.html('<input type="text">')
+    input = root.find('input')
+    bindings =
+        attr:
+            value:
+                selector: 'input'
+                m2v: (val) -> val.toUpperCase()
+                v2m: (val) -> val.toLowerCase()
+    Bindem.on.call view, bindings
+
+    model.set 'attr', 'hello'
+    eq input.val(), 'HELLO'
+
+    input.val('HI')
+    input.trigger('change')
+    eq model.get('attr'), 'hi'
+
+
 module 'bindings'
 
 test 'text', ->
@@ -138,6 +191,17 @@ test 'attr', ->
         str:
             attr:
                 title: 'div'
+    Bindem.on.call view, bindings
+    model.set 'str', 'hello'
+
+    eq el.attr('title'), 'hello'
+
+test 'attr object', ->
+    bindings =
+        str:
+            attr:
+                title:
+                    selector: 'div'
     Bindem.on.call view, bindings
     model.set 'str', 'hello'
 
