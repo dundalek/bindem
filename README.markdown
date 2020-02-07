@@ -1,10 +1,10 @@
 # Backbone Bind'em
 
-A light-weight javascript library providing [Knockout](http://knockoutjs.com/)-like two-way declarative data binding for [Backbone](http://documentcloud.github.com/backbone/).
+A light-weight javascript library providing [Knockout](https://knockoutjs.com/)-like two-way declarative data binding for [Backbone](https://documentcloud.github.com/backbone/).
 
-[Homepage](http://dundalek.com/bindem/)
+[Homepage](https://dundalek.com/bindem/)
 
-Demos: [examples.html](http://dundalek.com/bindem/examples.html)
+Demos: [examples.html](https://dundalek.com/bindem/examples.html)
 
 ## Example code
 
